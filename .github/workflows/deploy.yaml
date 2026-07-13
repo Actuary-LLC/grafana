@@ -21,4 +21,5 @@ jobs:
       TAG: ${{ github.sha }}
     steps:
       - run: | 
+          chmod 644 ./loki/config.yaml ./promtail/config.yaml
           docker stack deploy -c grafana.yaml grafana
