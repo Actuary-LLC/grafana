@@ -7,18 +7,18 @@ on:
 
 jobs:
   checkout-repository:
-    runs-on: [DEVICE]
+    runs-on: [coral]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: 'Actuary-LLC/[REPO]'
+          repository: 'Actuary-LLC/[grafana]'
           ref: 'main'       
   deploy-task:
     needs: checkout-repository
-    runs-on: [DEVICE]
+    runs-on: [coral]
     env:
       TAG: ${{ github.sha }}
     steps:
       - run: | 
-          docker stack deploy -c [SERVICE].yaml [STACK]
+          docker stack deploy -c grafana.yaml grafana
