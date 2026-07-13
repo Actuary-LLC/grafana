@@ -4,27 +4,39 @@ networks:
   reverse-proxy:
     external: true
 
+volumes:
+  loki-data:
+    driver: local
+  promtail-positions:
+    driver: local
+
 services:
-  [SERVICE]:
-    image: [REPO]/[IMAGE]:[VERSION]
+  # ── Loki ──────────────────────────────────────────────────────────
+  #   Internal only: http://loki:3100 (overlay network)
+  #   No Traefik — not accessible externally
+  loki:
+    image: grafana/loki:3.1.0
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./loki/config.yml:/etc/loki/config.yml:ro
+      - /mnt/user/docker/volumes/grafana/loki:/loki
     networks:
       reverse-proxy:
-    #command:
-    #ports:
-    #volumes:
-    #  - /mnt/user/docker/volumes/[SERVICE]:/[FILEPATH]
-    #environment:
     deploy:
-      labels:
-        # Traefik
-        - "traefik.enable=true"
-        - "traefik.http.routers.[SERVICE].rule=Host(`[SERVICE].actuary.dev`)"
-        - "traefik.http.routers.[SERVICE].entrypoints=websecure"
-        - "traefik.http.routers.[SERVICE].service=[SERVICE]"
-        - "traefik.http.routers.[SERVICE].tls.certresolver=myresolver"
-        - "traefik.http.services.[SERVICE].loadbalancer.server.port=6806"
-        ## Middlewares
-        - "traefik.http.routers.[SERVICE].middlewares=authentik"
-        #DIUN
-        - diun.enable = true
-        - diun.notify_on = new
+      placement:
+        constraints:
+          - node.role == manager
+  # ── Promtail ─────────────────────────────────────────────────────
+  #   Runs on every node, auto-discovers all swarm services
+  promtail:
+    image: grafana/promtail:3.1.0
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - promtail-positions:/tmp
+    networks:
+      reverse-proxy:
+    deploy:
+      mode: global
