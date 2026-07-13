@@ -10,9 +10,9 @@ jobs:
     runs-on: [coral]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          repository: 'Actuary-LLC/[grafana]'
+          repository: 'Actuary-LLC/grafana'
           ref: 'main'       
   deploy-task:
     needs: checkout-repository
