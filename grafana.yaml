@@ -32,7 +32,7 @@ services:
     image: grafana/promtail:3.1.0
     command: -config.file=/etc/promtail/config.yml
     volumes:
-      - ./promtail/config.yaml:/etc/promtail/config.yml:ro
+      - /mnt/user/docker/configs/grafana/promtail/config.yaml:/etc/promtail/config.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - promtail-positions:/tmp
