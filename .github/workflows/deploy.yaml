@@ -17,9 +17,12 @@ jobs:
 
       - name: Copy configs to persistent storage
         run: |
-          cp ./loki/config.yaml /mnt/user/docker/volumes/grafana/loki/config.yaml
-          cp ./promtail/config.yaml /mnt/user/docker/volumes/grafana/promtail/config.yaml
-          chmod 644 /mnt/user/docker/volumes/grafana/loki/config.yaml
-          chmod 644 /mnt/user/docker/volumes/grafana/promtail/config.yaml
+          mkdir -p /mnt/user/docker/configs/grafana/loki
+          mkdir -p /mnt/user/docker/configs/grafana/promtail
+          cp ./loki/config.yaml /mnt/user/docker/configs/grafana/loki/config.yaml
+          cp ./promtail/config.yaml /mnt/user/docker/configs/grafana/promtail/config.yaml
+          chmod 644 /mnt/user/docker/configs/grafana/loki/config.yaml
+          chmod 644 /mnt/user/docker/configs/grafana/promtail/config.yaml
+
       - name: Deploy stack
         run: docker stack deploy -c grafana.yaml grafana
