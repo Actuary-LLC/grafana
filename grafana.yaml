@@ -7,8 +7,16 @@ networks:
 volumes:
   loki-data:
     driver: local
+  loki-compactor:
+    driver: local
   promtail-positions:
     driver: local
+
+configs:
+  loki-config:
+    file: ./loki/config.yaml
+  promtail-config:
+    file: ./promtail/config.yaml
 
 services:
   # ── Loki ──────────────────────────────────────────────────────────
@@ -17,9 +25,12 @@ services:
   loki:
     image: grafana/loki:3.1.0
     command: -config.file=/etc/loki/config.yml
+    configs:
+      - source: loki-config
+        target: /etc/loki/config.yml
     volumes:
-      - /mnt/user/docker/configs/grafana/loki/config.yaml:/etc/loki/config.yml:ro
       - /mnt/user/docker/volumes/grafana/loki:/loki
+      - loki-compactor:/loki/compactor
     networks:
       reverse-proxy:
     deploy:
@@ -31,8 +42,10 @@ services:
   promtail:
     image: grafana/promtail:3.1.0
     command: -config.file=/etc/promtail/config.yml
+    configs:
+      - source: promtail-config
+        target: /etc/promtail/config.yml
     volumes:
-      - /mnt/user/docker/configs/grafana/promtail/config.yaml:/etc/promtail/config.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - promtail-positions:/tmp

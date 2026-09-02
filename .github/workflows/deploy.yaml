@@ -15,14 +15,5 @@ jobs:
           repository: 'Actuary-LLC/grafana'
           ref: 'main'
 
-      - name: Copy configs to persistent storage
-        run: |
-          mkdir -p /mnt/user/docker/configs/grafana/loki
-          mkdir -p /mnt/user/docker/configs/grafana/promtail
-          cp ./loki/config.yaml /mnt/user/docker/configs/grafana/loki/config.yaml
-          cp ./promtail/config.yaml /mnt/user/docker/configs/grafana/promtail/config.yaml
-          chmod 644 /mnt/user/docker/configs/grafana/loki/config.yaml
-          chmod 644 /mnt/user/docker/configs/grafana/promtail/config.yaml
-
       - name: Deploy stack
         run: docker stack deploy -c grafana.yaml grafana
