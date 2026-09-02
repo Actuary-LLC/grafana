@@ -22,6 +22,7 @@ services:
     volumes:
       - /mnt/user/docker/configs/grafana/loki/config.yaml:/etc/loki/config.yml:ro
       - /mnt/user/docker/volumes/grafana/loki:/loki
+      - loki-compactor:/loki/compactor
     networks:
       reverse-proxy:
     deploy:
