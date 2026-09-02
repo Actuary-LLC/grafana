@@ -18,7 +18,7 @@ services:
     image: grafana/loki:3.1.0
     command: -config.file=/etc/loki/config.yml
     volumes:
-      - ./loki/config.yaml:/etc/loki/config.yml:ro
+      - /mnt/user/docker/configs/grafana/loki/config.yaml:/etc/loki/config.yml:ro
       - /mnt/user/docker/volumes/grafana/loki:/loki
     networks:
       reverse-proxy:
