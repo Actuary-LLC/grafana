@@ -16,4 +16,12 @@ jobs:
           ref: 'main'
 
       - name: Deploy stack
-        run: docker stack deploy -c grafana.yaml grafana
+        run: |
+          # Remove existing stack to allow config updates
+          # (Swarm configs are immutable — contents cannot be changed, only labels)
+          if docker stack ls | grep -q grafana; then
+            docker stack rm grafana
+            echo "Waiting for stack cleanup..."
+            sleep 10
+          fi
+          docker stack deploy -c grafana.yaml grafana
