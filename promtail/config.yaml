@@ -18,17 +18,25 @@ scrape_configs:
       - host: unix:///var/run/docker.sock
         refresh_interval: 5s
     relabel_configs:
-      # Swarm service name → "service" label (this is what we query on)
+      # Swarm service name → "service" label
       - source_labels:
           - __meta_docker_container_label_com_docker_swarm_service_name
         regex: "(.+)"
         target_label: service
 
-      # Container name (includes task slot: "my_service.1.abc123")
+      # Container name (includes task slot for swarm: "my_service.1.abc123")
       - source_labels:
           - __meta_docker_container_name
         regex: "/?(.*)"
         target_label: container
+
+      # For standalone containers: use container name as "service" label
+      # when no Swarm service name exists (service label is empty)
+      - source_labels:
+          - service
+          - __meta_docker_container_name
+        regex: "^$;/(.+)"
+        target_label: service
 
       # Swarm node ID
       - source_labels:
